@@ -19,11 +19,17 @@ public class LocationService {
 	public BaseResponse addLocation(Location location)
 	{
 		BaseResponse baseResponse=null ;
+		baseResponse.setCode(CODE_SUCCESS);
+		baseResponse.setStatus(SUCCESS_STATUS) ;
 		return baseResponse ;
+		
 	}
 	public BaseResponse updateLocation(Location location)
 	{
 		BaseResponse baseResponse=null ;
+		baseResponse.setCode(CODE_SUCCESS);
+		baseResponse.setStatus(SUCCESS_STATUS) ;
+	
 		return baseResponse ;
 	}
 }
