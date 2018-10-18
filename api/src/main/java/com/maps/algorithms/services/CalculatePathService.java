@@ -1,7 +1,8 @@
-package services;
+package com.maps.algorithms.services;
 import java.util.List;
 
-import model.* ;
+import com.maps.algorithms.model.GeoLocation;
+import com.maps.algorithms.model.Location;
 
 public class CalculatePathService {
 	

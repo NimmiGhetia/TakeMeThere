@@ -1,4 +1,4 @@
-package model;
+package com.maps.algorithms.model;
 
 public class LocationEndPoints {
 

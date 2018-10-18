@@ -1,6 +1,6 @@
-package services;
+package com.maps.algorithms.services;
 
-import model.*;
+import com.maps.algorithms.model.*;
 
 public class LocationService {
 

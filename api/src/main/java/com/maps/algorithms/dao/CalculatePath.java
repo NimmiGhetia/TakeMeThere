@@ -1,7 +1,7 @@
-package dao;
+package com.maps.algorithms.dao;
 import java.util.List;
 
-import model.Location ;
+import com.maps.algorithms.model.Location ;
 
 public interface CalculatePath {
 	

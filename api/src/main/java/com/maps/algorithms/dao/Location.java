@@ -1,4 +1,4 @@
-package dao;
+package com.maps.algorithms.dao;
 
 public interface Location {
 
