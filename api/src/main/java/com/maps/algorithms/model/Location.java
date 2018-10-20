@@ -1,7 +1,13 @@
 package com.maps.algorithms.model ;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class Location {
 
+        @Id
+        private String id ;
 	private String name ;
 	private String details ;
 	private GeoLocation geoLocation ;

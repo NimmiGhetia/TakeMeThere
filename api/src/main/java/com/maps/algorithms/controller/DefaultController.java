@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class DefaultController {
 
-	   @RequestMapping(value = "/tp", method = RequestMethod.GET)
+	   @RequestMapping(value = "/tp", method = RequestMethod.POST)
 	   public String tp()
 	    {
 	    	return "Success from default" ;
 	    }
-	   @GetMapping("/get")
+	   @RequestMapping("/get")
 	   public String tp2()
 	    {
 	    	return "Success Get from default" ;

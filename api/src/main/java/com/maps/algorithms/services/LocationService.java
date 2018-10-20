@@ -1,35 +1,25 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.maps.algorithms.services;
 
-import com.maps.algorithms.model.*;
+import com.maps.algorithms.model.BaseResponse;
+import com.maps.algorithms.model.GeoLocation;
+import com.maps.algorithms.model.Location;
+import org.springframework.stereotype.Service;
 
-public class LocationService {
+/**
+ *
+ * @author nimmi
+ */
 
-	private static final String SUCCESS_STATUS = "success";
-    private static final String ERROR_STATUS = "error";
-    private static final int CODE_SUCCESS = 100;
-    private static final int AUTH_FAILURE = 102;
-
-
-	public Location showLocationDetails(GeoLocation geoLocation)
-	{
-		Location location=null ;
-		return location ;
-		
-	}
-	public BaseResponse addLocation(Location location)
-	{
-		BaseResponse baseResponse=null ;
-		baseResponse.setCode(CODE_SUCCESS);
-		baseResponse.setStatus(SUCCESS_STATUS) ;
-		return baseResponse ;
-		
-	}
-	public BaseResponse updateLocation(Location location)
-	{
-		BaseResponse baseResponse=null ;
-		baseResponse.setCode(CODE_SUCCESS);
-		baseResponse.setStatus(SUCCESS_STATUS) ;
+public interface LocationService {
+    	public Location showLocationDetails(GeoLocation geoLocation) ;
+        public BaseResponse addLocation(Location location) ;
+        public BaseResponse updateLocation(Location location);
 	
-		return baseResponse ;
-	}
+	
+
 }
