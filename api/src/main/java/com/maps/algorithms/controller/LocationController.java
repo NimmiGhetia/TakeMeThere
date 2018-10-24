@@ -9,7 +9,9 @@ import com.maps.algorithms.model.BaseResponse;
 import com.maps.algorithms.model.GeoLocation;
 import com.maps.algorithms.model.Location;
 import com.maps.algorithms.services.LocationService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/location")
@@ -18,25 +20,41 @@ public class LocationController {
     @Autowired
     private LocationService locationService ;
     
-    @RequestMapping(value="/show",method=RequestMethod.POST) 
-    public Location showLocation(@RequestBody GeoLocation geoLocation)
+    @RequestMapping(value="/{name}",method=RequestMethod.GET) 
+    public Location showLocationByName(@PathVariable String name)
     {
         System.out.println("inside location servoce") ;
-    	Location location=locationService.showLocationDetails(geoLocation) ;
+    	Location location=locationService.showLocationDetailsByName(name) ;
+    	return location ;
+    }
+    
+    @RequestMapping(method=RequestMethod.GET) 
+    public List<Location> findAllLocations()
+    {
+        System.out.println("inside location servoce") ;
+    	List<Location> locations=locationService.findAllLocations() ;
+    	return locations ;
+    }
+    
+    @RequestMapping(value="/lat/{lat}/lng/{lng:.+}",method=RequestMethod.GET) 
+    public Location showLocation(@PathVariable String lat,@PathVariable String lng)
+    {
+        System.out.println("inside location service") ;
+    	Location location=locationService.showLocationDetails(lat,lng) ;
     	return location ;
     }
     
     @RequestMapping(value="/add",method=RequestMethod.POST) 
-    public BaseResponse addLocation(@RequestBody Location location)
+    public Location addLocation(@RequestBody String location)
     {
-    	BaseResponse baseResponse=locationService.addLocation(location) ;
-    	return baseResponse ;
+    	Location newLocation=locationService.addLocation(location) ;
+    	return newLocation ;
     }
     
     @RequestMapping(value="/update",method=RequestMethod.PUT) 
-    public BaseResponse updateLocation(@RequestBody Location location)
+    public Location updateLocation(@RequestBody String location)
     {
-    	BaseResponse baseResponse=locationService.updateLocation(location) ;
-    	return baseResponse ;
+    	Location updatedLocation=locationService.updateLocation(location) ;
+    	return updatedLocation ;
     }	
 }

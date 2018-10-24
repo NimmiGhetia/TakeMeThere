@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = "com.maps.algorithms")
 public class ApplicationConfiguration  {
 
-    public @Bean MongoDbFactory getMongoDbFactory() throws Exception {
+        public @Bean MongoDbFactory getMongoDbFactory() throws Exception {
 		return new SimpleMongoDbFactory(new MongoClient("localhost",27017), "Maps");
 	}
 

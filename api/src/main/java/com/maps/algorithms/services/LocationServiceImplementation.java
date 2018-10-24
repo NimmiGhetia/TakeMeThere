@@ -2,6 +2,7 @@ package com.maps.algorithms.services;
 
 import com.maps.algorithms.dao.LocationDao;
 import com.maps.algorithms.model.*;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +17,39 @@ public class LocationServiceImplementation implements LocationService {
     private static final int CODE_SUCCESS = 100;
     private static final int AUTH_FAILURE = 102;
 
-
-	public Location showLocationDetails(GeoLocation geoLocation)
+        
+	public Location showLocationDetailsByName(String name)
 	{
 	
-                Location location=locationDao.showLocationDetails(geoLocation) ;
+                Location location=locationDao.showLocationDetailsByName(name) ;
 		return location ;
 		
 	}
-	public BaseResponse addLocation(Location location)
+
+	public Location showLocationDetails(String lat,String lng)
 	{
-		BaseResponse baseResponse=null ;
-		baseResponse.setCode(CODE_SUCCESS);
-		baseResponse.setStatus(SUCCESS_STATUS) ;
-		return baseResponse ;
+                System.out.println("inside Location Service Implementatiom") ;
+                Location location=locationDao.showLocationDetails(lat,lng) ;
+//                if(location==null)
+//                    return "No data found" ;
+		return location ;
 		
 	}
-	public BaseResponse updateLocation(Location location)
+	public Location addLocation(String location)
 	{
-		BaseResponse baseResponse=null ;
-		baseResponse.setCode(CODE_SUCCESS);
-		baseResponse.setStatus(SUCCESS_STATUS) ;
-	
-		return baseResponse ;
+            Location newLocation=locationDao.addLocation(location) ;
+            return newLocation ;
+		
 	}
+	public Location updateLocation(String location)
+	{
+	    Location updateLocation=locationDao.updateLocation(location) ;
+            return updateLocation ;
+	}
+
+    @Override
+    public List<Location> findAllLocations() {
+        List<Location> locations=locationDao.findAllLocations() ;
+        return locations;
+    }
 }

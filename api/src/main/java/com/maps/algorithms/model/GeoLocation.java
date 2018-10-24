@@ -1,21 +1,30 @@
 package com.maps.algorithms.model ;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class GeoLocation {
 	
-	float longitude ;
-	float latitude ;
-	public float getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(float longitude) {
-		this.longitude = longitude;
-	}
-	public float getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(float latitude) {
-		this.latitude = latitude;
-	}
+        @Field("longitude")
+	private double longitude ;
+	@Field("latitude")
+        private double latitude ;
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 	
+        
 	
 }

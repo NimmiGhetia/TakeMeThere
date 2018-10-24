@@ -1,0 +1,16 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.maps.algorithms.model;
+
+import java.util.List;
+
+/**
+ *
+ * @author nimmi
+ */
+public interface Algorithm {
+    public List<Location> calculatePath(Location source,Location destination);
+}

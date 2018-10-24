@@ -1,20 +1,25 @@
 package com.maps.algorithms.model ;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public class Location {
+@Document(collection="Locations")
+public class Location<T extends GeoLocation> {
 
         @Id
         private String id ;
 	private String name ;
 	private String details ;
-	private GeoLocation geoLocation ;
+//        @Field("geolocation")
+	private T geoLocation ;
+        private String address ;
+	
 	public GeoLocation getGeoLocation() {
 		return geoLocation;
 	}
-	public void setGeoLocation(GeoLocation geoLocation) {
+	public void setGeoLocation(T geoLocation) {
 		this.geoLocation = geoLocation;
 	}
 	public String getName() {
@@ -30,11 +35,10 @@ public class Location {
 		this.details = details;
 	}
 	public String getAddress() {
-		return Address;
+		return address;
 	}
 	public void setAddress(String address) {
-		Address = address;
+		this.address = address;
 	}
-	private String Address ;
 	
 }
