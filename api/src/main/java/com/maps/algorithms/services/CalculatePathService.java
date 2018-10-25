@@ -16,9 +16,10 @@ import org.springframework.stereotype.Service;
  */
 
 public interface CalculatePathService {
-    public List<Location> calculatePathUsingAStar(GeoLocation source,GeoLocation destination) ;
-    public List<Location> calculatePathUsingBellmanFord(GeoLocation source,GeoLocation destination) ;
-    public List<Location> calculatePathUsingDijkstras(GeoLocation source,GeoLocation destination) ; 
+    
+    public List<Location> calculatePathUsingAStar(String source,String destination) ;
+    public List<Location> calculatePathUsingBellmanFord(String source,String destination) ;
+    public List<Location> calculatePathUsingDijkstras(String locationEndPoints) ; 
 		
 		
 		

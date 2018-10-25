@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.maps.algorithms.model;
+package com.maps.algorithms.dao;
 
+import com.maps.algorithms.model.Location;
 import java.util.List;
 
 /**
  *
  * @author nimmi
  */
-public interface Algorithm {
-    public List<Location> calculatePath(Location source,Location destination);
+public interface ConnectionDao {
+    
+    public List<Location> findNeighbors(String name) ;
 }

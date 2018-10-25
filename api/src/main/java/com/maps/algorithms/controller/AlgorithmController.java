@@ -21,7 +21,7 @@ public class AlgorithmController {
             
             @Autowired
             private CalculatePathService calculatePathService ;
-                    
+            
 	    @RequestMapping(value="/AStar",method=RequestMethod.POST) 
 	    public List<Location> calculateAStar(@RequestBody LocationEndPoints locationEndPoints)
 	    {
@@ -30,16 +30,17 @@ public class AlgorithmController {
 	    }
 	    
 	    @RequestMapping(value="/Dijkstras",method=RequestMethod.POST) 
-	    public List<Location> calculateDijkstras(@RequestBody LocationEndPoints locationEndPoints)
+	    public List<Location> calculateDijkstras(@RequestBody String locationEndPoints)
 	    {
-	    	List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints.getSourceLocation(), locationEndPoints.getDestinationLocation()) ;
+                System.out.println("inside dijkstras controller") ;
+	    	List<Location> list=calculatePathService.calculatePathUsingDijkstras(locationEndPoints) ;
 	    	return list ;
 	    }
 	    
 	    @RequestMapping(value="/BellmanFord",method=RequestMethod.POST) 
 	    public List<Location> calculateBellmanFord(@RequestBody LocationEndPoints locationEndPoints)
 	    {
-	    	List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints.getSourceLocation(), locationEndPoints.getDestinationLocation()) ;
+	    	List<Location> list=calculatePathService.calculatePathUsingBellmanFord(locationEndPoints.getSourceLocation(), locationEndPoints.getDestinationLocation()) ;
 	    	return list ;
 	    }
 }

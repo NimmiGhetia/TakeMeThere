@@ -2,18 +2,18 @@ package com.maps.algorithms.model;
 
 public class LocationEndPoints {
 
-	private GeoLocation sourceLocation ;
-	private GeoLocation destinationLocation ;
-	public GeoLocation getSourceLocation() {
+	private String sourceLocation ;
+	private String destinationLocation ;
+	public String getSourceLocation() {
 		return sourceLocation;
 	}
-	public void setSourceLocation(GeoLocation sourceLocation) {
+	public void setSourceLocation(String sourceLocation) {
 		this.sourceLocation = sourceLocation;
 	}
-	public GeoLocation getDestinationLocation() {
+	public String getDestinationLocation() {
 		return destinationLocation;
 	}
-	public void setDestinationLocation(GeoLocation destinationLocation) {
+	public void setDestinationLocation(String destinationLocation) {
 		this.destinationLocation = destinationLocation;
 	}
 }

@@ -40,5 +40,14 @@ public class Location<T extends GeoLocation> {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+//        @Override
+//        public String toString()
+//        {
+//            return ("\nName="+this.name+"\n Details="+this.details+
+//                    "\n Geolocation: latitude="+this.geoLocation.getLatitude()+
+//                    "\n Geolocation: longitude="+this.geoLocation.getLongitude()+
+//                    "\n address"+this.address) ;
+//                    
+//        }
 	
 }

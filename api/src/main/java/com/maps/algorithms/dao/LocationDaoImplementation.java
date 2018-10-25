@@ -42,7 +42,11 @@ public class LocationDaoImplementation implements LocationDao {
     public Location showLocationDetailsByName(String name)
     {
         Query searchUserQuery = new Query(Criteria.where("name").is(name));
+        
         Location location= mongoOps.findOne(searchUserQuery, Location.class) ;
+//        GeoLocation geoLocation= mongoOps.findOne(searchUserQuery, GeoLocation.class) ;
+//        location.setGeoLocation(geoLocation);
+//        System.out.println(geoLocation) ;
         
         System.out.println() ;
         System.out.println() ;
