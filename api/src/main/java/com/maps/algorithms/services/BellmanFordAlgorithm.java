@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,9 @@ import org.springframework.stereotype.Service;
  * @author nimmi
  */
 @Service
-public class DijkstrasAlgorithm implements Algorithm{
-    
-    @Autowired
+public class BellmanFordAlgorithm implements Algorithm{
+
+   @Autowired
     ConnectionDao connectionDao ;
     @Autowired
     LocationDao locationDao ;
@@ -35,8 +34,11 @@ public class DijkstrasAlgorithm implements Algorithm{
     public class Node {
      
             private String name;
+
             private List<Node> shortestPath = new LinkedList<>();
+
             private double distance = Double.MAX_VALUE;
+
             Map<Node, Double> adjacentNodes = new HashMap<>();
 
             public void addDestination(Node destination, double distance) {
@@ -48,7 +50,7 @@ public class DijkstrasAlgorithm implements Algorithm{
             }
 
             public List<Node> getShortestPath() {
-                return shortestPath;
+                 return shortestPath;
             }
 
             public void setShortestPath(List<Node> shortestPath) {
@@ -79,7 +81,7 @@ public class DijkstrasAlgorithm implements Algorithm{
                 this.distance = distance;
             }
         }
-
+        
         private static Node getLowestDistanceNode(Set<Node> unsettledNodes) {
             Node lowestDistanceNode = null;
             double lowestDistance = Double.MAX_VALUE;
@@ -92,7 +94,7 @@ public class DijkstrasAlgorithm implements Algorithm{
             }
             return lowestDistanceNode;
         }
-
+        
         public class Graph {
 
             private Set<Node> nodes = new HashSet<>();
@@ -100,7 +102,17 @@ public class DijkstrasAlgorithm implements Algorithm{
             public void addNode(Node nodeA) {
                 nodes.add(nodeA);
             }
-           }
+            
+            public int getSize()
+            {
+                return nodes.size() ;
+            }
+            
+            public Set<Node> getNodes()
+            {
+                return nodes ;
+            }
+        }
     
         private static void calculateMinimumDistance(Node evaluationNode,
         Double edgeWeigh, Node sourceNode) {
@@ -111,34 +123,39 @@ public class DijkstrasAlgorithm implements Algorithm{
               shortestPath.add(sourceNode);
               evaluationNode.setShortestPath(shortestPath);
           }
-      }
-    
-        public static Graph calculateShortestPathFromSource(Graph graph, Node source) {
-            source.setDistance(0.0);
-            
-            Set<Node> settledNodes = new HashSet<>();
-            Set<Node> unsettledNodes = new HashSet<>();
-
-            unsettledNodes.add(source);
-
-            while (unsettledNodes.size() != 0) {
-                Node currentNode = getLowestDistanceNode(unsettledNodes);
-                unsettledNodes.remove(currentNode);
-                for (Entry<Node, Double> adjacencyPair : 
-                  currentNode.getAdjacentNodes().entrySet()) {
-                    Node adjacentNode = adjacencyPair.getKey();
-                    Double edgeWeight = adjacencyPair.getValue();
-                    if (!settledNodes.contains(adjacentNode)) {
-                        calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
-                        unsettledNodes.add(adjacentNode);
-                    }
-                }
-                settledNodes.add(currentNode);
-            }
-            return graph;
         }
     
-        public static double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
+        public static Graph calculateShortestPathFromSource(Graph graph, Node source) throws NegativeCycleException {
+        source.setDistance(0.0);
+        int numOfNodes=graph.getSize() ;
+        Set<Node> nodes=graph.getNodes() ;
+        
+        for(int i=0 ; i<numOfNodes-1 ; i++ ) {
+            for(Node currentNode : nodes) {
+                for (Map.Entry< Node, Double> adjacencyPair : 
+                        currentNode.getAdjacentNodes().entrySet()) {
+                        Node adjacentNode = adjacencyPair.getKey();
+                        Double edgeWeight = adjacencyPair.getValue();
+                        System.out.println("calculating minimun distance between "+currentNode.getName() +" and "+adjacentNode.getName());
+                        calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
+                }                    
+            }
+        }
+            
+        for(Node currentNode : nodes) {
+            for (Map.Entry< Node, Double> adjacencyPair : 
+                        currentNode.getAdjacentNodes().entrySet()) {
+                        Node adjacentNode = adjacencyPair.getKey();
+                        Double edgeWeight = adjacencyPair.getValue();
+                        if (currentNode.getDistance() + edgeWeight < adjacentNode.getDistance()) {
+                            throw new NegativeCycleException("Negative cycle detected") ;
+                        }
+            }                    
+        }
+        return graph;
+    }
+    
+    public static double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
                   double theta = lon1 - lon2;
                   double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2))
                               + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
@@ -165,36 +182,39 @@ public class DijkstrasAlgorithm implements Algorithm{
         }
         
     @Override
-    public List<Location> calculatePath(String source,String destination) {
-        List<Location> list = null ;
+    public List<Location> calculatePath(String source,String destination) throws NegativeCycleException {
+        List<Location> list=null ;
         list=connectionDao.findNeighbors(source) ;
-        Location sourceLocation = locationDao.showLocationDetailsByName(source) ;
-        Map<String,Node> nodes = new HashMap<String,Node>() ;
-        Node sourceNode = new Node(source) ;
+        Location sourceLocation=locationDao.showLocationDetailsByName(source) ;
+        Map<String,Node> nodes=new HashMap<String,Node>() ;
+        Node sourceNode=new Node(source) ;
         nodes.put(source, sourceNode) ;
-        List<Node> node = new ArrayList<Node>() ;
-        
+        List<Node> node=new ArrayList<Node>() ;
+        int i=0 ;
+        node.add(sourceNode) ;
         for(Location location : list) {
-            if(nodes.get(location.getName())!=null)
+            if(nodes.get(location.getName()) != null)
                     continue ;
+            i++ ;
             Node temp = new Node(location.getName()) ;
+            System.out.println("adding "+location.getName()+" to graph") ;
             node.add(temp) ;
             nodes.put(location.getName(), temp) ;
-            List<Location> listOfLocations = 
-                    this.connectionDao.findNeighbors(location.getName()) ;
+            List<Location> listOfLocations = this.connectionDao.findNeighbors(location.getName()) ;
             if(listOfLocations != null) 
             for(Location loc : listOfLocations) {
                  if(nodes.get(loc.getName()) != null)
                      continue ;
+                 i++ ;
                  Node temp2 = new Node(loc.getName()) ;
+                 System.out.println("adding "+loc.getName()+" to graph") ;
                  node.add(temp2) ;
                  nodes.put(loc.getName(), temp2) ;
              }
         }
-        //for source location
-        if(list!=null)   
+        if(list != null)   
         for(Location loc : list) {
-                Node nextNode = nodes.get(loc.getName()) ;
+                Node nextNode=nodes.get(loc.getName()) ;
                 System.out.println(loc.toString());
                 double lat1=sourceLocation.getGeoLocation().getLatitude() ;
                 double lng1=sourceLocation.getGeoLocation().getLongitude() ;
@@ -202,10 +222,9 @@ public class DijkstrasAlgorithm implements Algorithm{
                 double lng2=loc.getGeoLocation().getLongitude() ;
                 sourceNode.addDestination(nextNode,  distance(lat1,lng1,lat2,lng2,'M'));
         }
-   
         for(Location location : list) {
             System.out.println("inside outer for with parent node="+location.getName()) ;
-            List<Location> listOfLocations = 
+            List<Location> listOfLocations =
                     this.connectionDao.findNeighbors(location.getName()) ;
             if(listOfLocations != null)
             for(Location loc : listOfLocations) {
@@ -222,22 +241,23 @@ public class DijkstrasAlgorithm implements Algorithm{
                 temp.addDestination(nextNode, distance(lat1,lng1,lat2,lng2,'M'));
             }
         } 
-        
         Graph graph = new Graph() ;
         for(Node singleNode : node) {
             graph.addNode(singleNode) ;
         }
         
-        graph=DijkstrasAlgorithm.calculateShortestPathFromSource(graph, sourceNode);
+        graph=BellmanFordAlgorithm.calculateShortestPathFromSource(graph, sourceNode);
+       
         List<Location> result = new ArrayList();
-        for(Node finalNode : graph.nodes){
+        for(Node finalNode : graph.nodes) {
             System.out.println(finalNode.getName()+"=="+destination) ;
             if(finalNode.getName().equals(destination))
-            for(Node nextNode : finalNode.getShortestPath()){
+            for(Node nextNode: finalNode.getShortestPath()) {
+                System.out.println("inside final for");
                 Location loc = locationDao.showLocationDetailsByName(nextNode.getName()) ;
                 result.add(loc) ;
             }
         }
         return result;
-    }
+    } 
 }

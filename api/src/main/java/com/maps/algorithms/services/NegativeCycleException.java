@@ -5,13 +5,14 @@
  */
 package com.maps.algorithms.services;
 
-import com.maps.algorithms.model.Location;
-import java.util.List;
-
 /**
  *
  * @author nimmi
  */
-public interface Algorithm {
-    public List<Location> calculatePath(String source,String destination) throws NegativeCycleException ;
+public class NegativeCycleException extends Exception{
+    
+    public NegativeCycleException(String message) {
+        super(message) ;
+    }
+    
 }

@@ -24,14 +24,43 @@ public class CalculatePathServiceImplementation implements CalculatePathService 
                 LocationDao locationDao ;
                 @Autowired
                 DijkstrasAlgorithm dijkstrasAlgorithm ;
-		public List<Location> calculatePathUsingAStar(String source,String destination)
+                @Autowired
+                AStarAlgorithm aStarAlgorithm ;
+                @Autowired
+                BellmanFordAlgorithm bellmanFordAlgorithm ;
+                
+		public List<Location> calculatePathUsingAStar(String locationEndPoints)
 		{
-			List<Location> list =null;
+                        List<Location> list =null;
+                        LocationEndPoints newlocationEndPoint=new LocationEndPoints() ;
+                        try { 
+                            JSONParser parse = new JSONParser();
+                            JSONObject jobj = (JSONObject)parse.parse(locationEndPoints);
+                           String str_data1 = (String) jobj.get("source");
+                            newlocationEndPoint.setSourceLocation(str_data1);
+                            String str_data2 = (String) jobj.get("destination");
+                            newlocationEndPoint.setDestinationLocation(str_data2);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(LocationDaoImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        list=aStarAlgorithm.calculatePath(newlocationEndPoint.getSourceLocation(), newlocationEndPoint.getDestinationLocation());
 			return list ;
 		}
-		public List<Location> calculatePathUsingBellmanFord(String source,String destination) 
+		public List<Location> calculatePathUsingBellmanFord(String locationEndPoints) throws NegativeCycleException 
 		{
 			List<Location> list =null;
+                        LocationEndPoints newlocationEndPoint=new LocationEndPoints() ;
+                        try { 
+                            JSONParser parse = new JSONParser();
+                            JSONObject jobj = (JSONObject)parse.parse(locationEndPoints);
+                           String str_data1 = (String) jobj.get("source");
+                            newlocationEndPoint.setSourceLocation(str_data1);
+                            String str_data2 = (String) jobj.get("destination");
+                            newlocationEndPoint.setDestinationLocation(str_data2);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(LocationDaoImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        list=bellmanFordAlgorithm.calculatePath(newlocationEndPoint.getSourceLocation(), newlocationEndPoint.getDestinationLocation());
 			return list ;
 		}
 		public List<Location> calculatePathUsingDijkstras(String locationEndPoints) 

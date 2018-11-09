@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 
 public interface CalculatePathService {
     
-    public List<Location> calculatePathUsingAStar(String source,String destination) ;
-    public List<Location> calculatePathUsingBellmanFord(String source,String destination) ;
+    public List<Location> calculatePathUsingAStar(String locationEndPoints) ;
+    public List<Location> calculatePathUsingBellmanFord(String locationEndPoints) throws NegativeCycleException ;
     public List<Location> calculatePathUsingDijkstras(String locationEndPoints) ; 
 		
 		

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.maps.algorithms.model.*;
 import com.maps.algorithms.services.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
@@ -23,9 +25,9 @@ public class AlgorithmController {
             private CalculatePathService calculatePathService ;
             
 	    @RequestMapping(value="/AStar",method=RequestMethod.POST) 
-	    public List<Location> calculateAStar(@RequestBody LocationEndPoints locationEndPoints)
+	    public List<Location> calculateAStar(@RequestBody String locationEndPoints)
 	    {
-	    	List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints.getSourceLocation(), locationEndPoints.getDestinationLocation()) ;
+	    	List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints) ;
 	    	return list ;
 	    }
 	    
@@ -38,9 +40,17 @@ public class AlgorithmController {
 	    }
 	    
 	    @RequestMapping(value="/BellmanFord",method=RequestMethod.POST) 
-	    public List<Location> calculateBellmanFord(@RequestBody LocationEndPoints locationEndPoints)
+	    public List<Location> calculateBellmanFord(@RequestBody String locationEndPoints)
 	    {
-	    	List<Location> list=calculatePathService.calculatePathUsingBellmanFord(locationEndPoints.getSourceLocation(), locationEndPoints.getDestinationLocation()) ;
+	    	List<Location> list=null ;
+                System.out.println("inside bellman ford controller") ;    
+                try {
+                    list = calculatePathService.calculatePathUsingBellmanFord(locationEndPoints);
+                } catch (NegativeCycleException ex) {
+                    Location defaultLocation=new Location() ;
+                    defaultLocation.setName("Negative cycle detected") ;
+                    list.add(defaultLocation) ;
+                }
 	    	return list ;
 	    }
 }
