@@ -23,11 +23,21 @@ public class AlgorithmController {
             
             @Autowired
             private CalculatePathService calculatePathService ;
+            @Autowired
+            FloydWarshallAlgorithm floydWarshallAlgorithm ;
+            
+            @RequestMapping(value="/FloydWarshall",method=RequestMethod.GET) 
+	    public void calculateFloydWarshall()
+	    {
+	    	floydWarshallAlgorithm.floydWarshall();
+	    }
             
 	    @RequestMapping(value="/AStar",method=RequestMethod.POST) 
 	    public List<Location> calculateAStar(@RequestBody String locationEndPoints)
 	    {
-	    	List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints) ;
+	        System.out.println("inside Astar controller") ;
+	    
+                List<Location> list=calculatePathService.calculatePathUsingAStar(locationEndPoints) ;
 	    	return list ;
 	    }
 	    

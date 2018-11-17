@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nimmi
  */
-final class NodeData<String> { 
+final class NodeData<String> {
 
     private final String nodeId;
     private final Map<String, Double> heuristic;
@@ -37,9 +37,9 @@ final class NodeData<String> {
     private double h;  // h is the heuristic of destination.
     private double f;  // f = g + h 
 
-    public NodeData (String nodeId, Map<String, Double> heuristic) {
+    public NodeData(String nodeId, Map<String, Double> heuristic) {
         this.nodeId = nodeId;
-        this.g = Double.MAX_VALUE; 
+        this.g = Double.MAX_VALUE;
         this.heuristic = heuristic;
     }
 
@@ -58,7 +58,7 @@ final class NodeData<String> {
     public void calcF(String destination) {
         this.h = heuristic.get(destination);
         this.f = g + h;
-    } 
+    }
 
     public double getH() {
         return h;
@@ -67,30 +67,39 @@ final class NodeData<String> {
     public double getF() {
         return f;
     }
- }
+}
 
 final class GraphAStar<String> implements Iterable<String> {
+
     private final Map<String, Map<NodeData<String>, Double>> graph;
     private final Map<String, Map<String, Double>> heuristicMap;
     private final Map<String, NodeData<String>> nodeIdNodeData;
 
     public GraphAStar(Map<String, Map<String, Double>> heuristicMap) {
-        if (heuristicMap == null) throw new NullPointerException("The huerisic map should not be null");
+        if (heuristicMap == null) {
+            throw new NullPointerException("The huerisic map should not be null");
+        }
         graph = new HashMap<String, Map<NodeData<String>, Double>>();
         nodeIdNodeData = new HashMap<String, NodeData<String>>();
         this.heuristicMap = heuristicMap;
-    } 
+    }
 
     public void addNode(String nodeId) {
-        if (nodeId == null) throw new NullPointerException("The node cannot be null");
-        if (!heuristicMap.containsKey(nodeId)) throw new NoSuchElementException("This node is not a part of hueristic map");
+        if (nodeId == null) {
+            throw new NullPointerException("The node cannot be null");
+        }
+        if (!heuristicMap.containsKey(nodeId)) {
+            throw new NoSuchElementException("This node is not a part of hueristic map");
+        }
 
         graph.put(nodeId, new HashMap<NodeData<String>, Double>());
         nodeIdNodeData.put(nodeId, new NodeData<String>(nodeId, heuristicMap.get(nodeId)));
     }
 
     public void addEdge(String nodeIdFirst, String nodeIdSecond, double length) {
-        if (nodeIdFirst == null || nodeIdSecond == null) throw new NullPointerException("The first nor second node can be null.");
+        if (nodeIdFirst == null || nodeIdSecond == null) {
+            throw new NullPointerException("The first nor second node can be null.");
+        }
 
         if (!heuristicMap.containsKey(nodeIdFirst) || !heuristicMap.containsKey(nodeIdSecond)) {
             throw new NoSuchElementException("Source and Destination both should be part of the part of hueristic map");
@@ -98,54 +107,77 @@ final class GraphAStar<String> implements Iterable<String> {
         if (!graph.containsKey(nodeIdFirst) || !graph.containsKey(nodeIdSecond)) {
             throw new NoSuchElementException("Source and Destination both should be part of the part of graph");
         }
-
         graph.get(nodeIdFirst).put(nodeIdNodeData.get(nodeIdSecond), length);
-        graph.get(nodeIdSecond).put(nodeIdNodeData.get(nodeIdFirst), length);
     }
 
-    public Map<NodeData<String>, Double> edgesFrom (String nodeId) {
-        if (nodeId == null) throw new NullPointerException("Stringhe input node should not be null.");
-        if (!heuristicMap.containsKey(nodeId)) throw new NoSuchElementException("This node is not a part of hueristic map");
-        if (!graph.containsKey(nodeId)) throw new NoSuchElementException("The node should not be null.");
-        return Collections.unmodifiableMap(graph.get(nodeId));
+    public boolean containsNode(String nodeId) {
+        if (graph.get(nodeId) == null) {
+            return false;
+        }
+        return true;
     }
 
-    public NodeData<String> getNodeData (String nodeId) {
-        if (nodeId == null) { throw new NullPointerException("Stringhe nodeid should not be empty"); }
-        if (!nodeIdNodeData.containsKey(nodeId))  { throw new NoSuchElementException("The nodeId does not exist"); }
+    public Map<NodeData<String>, Double> edgesFrom(String nodeId) {
+        if (nodeId == null) {
+            throw new NullPointerException("Stringhe input node should not be null.");
+        }
+        if (!heuristicMap.containsKey(nodeId)) {
+            throw new NoSuchElementException("This node is not a part of hueristic map");
+        }
+        if (!graph.containsKey(nodeId)) {
+            throw new NoSuchElementException("The node should not be null.");
+        }
+        return graph.get(nodeId);
+    }
+
+    public NodeData<String> getNodeData(String nodeId) {
+        if (nodeId == null) {
+            throw new NullPointerException("String nodeid should not be empty");
+        }
+        if (!nodeIdNodeData.containsKey(nodeId)) {
+            throw new NoSuchElementException("The nodeId does not exist");
+        }
         return nodeIdNodeData.get(nodeId);
     }
 
-    @Override public Iterator<String> iterator() {
+    //remove this method
+    public Set<Entry<String, Map<NodeData<String>, Double>>> getEntrySet() {
+        return graph.entrySet();
+    }
+
+    @Override
+    public Iterator<String> iterator() {
         return graph.keySet().iterator();
     }
 }
+
 @Service
-public class AStarAlgorithm implements Algorithm{
+public class AStarAlgorithm implements Algorithm {
 
     @Autowired
-    ConnectionDao connectionDao ;
+    ConnectionDao connectionDao;
     @Autowired
-    LocationDao locationDao ;
-    
-    private GraphAStar<String> graph=null;
-    
-//
-//    public AStarAlgorithm (GraphAStar<String> graphAStar) {
-//        this.graph = graphAStar;
-//    }
+    LocationDao locationDao;
+    @Autowired
+    FloydWarshallAlgorithm floydWarshallAlgorithm;
+
+    private GraphAStar<String> graph = null;
 
     public class NodeComparator implements Comparator<NodeData<String>> {
+
         public int compare(NodeData<String> nodeFirst, NodeData<String> nodeSecond) {
-            if (nodeFirst.getF() > nodeSecond.getF()) return 1;
-            if (nodeSecond.getF() > nodeFirst.getF()) return -1;
+            if (nodeFirst.getF() > nodeSecond.getF()) {
+                return 1;
+            }
+            if (nodeSecond.getF() > nodeFirst.getF()) {
+                return -1;
+            }
             return 0;
         }
-    } 
+    }
 
     public List<String> astar(String source, String destination) {
-        final Queue<NodeData<String>> openQueue = new PriorityQueue<NodeData<String>>(11, new NodeComparator()); 
-
+        final Queue<NodeData<String>> openQueue = new PriorityQueue<NodeData<String>>(11, new NodeComparator());
         NodeData<String> sourceNodeData = graph.getNodeData(source);
         sourceNodeData.setG(0);
         sourceNodeData.calcF(destination);
@@ -155,18 +187,18 @@ public class AStarAlgorithm implements Algorithm{
         final Set<NodeData<String>> closedList = new HashSet<NodeData<String>>();
 
         while (!openQueue.isEmpty()) {
-            final NodeData<String> nodeData = openQueue.poll();
 
-            if (nodeData.getNodeId().equals(destination)) { 
+            final NodeData<String> nodeData = openQueue.poll();
+            if (nodeData.getNodeId().equals(destination)) {
                 return path(path, destination);
             }
 
             closedList.add(nodeData);
-
             for (Entry<NodeData<String>, Double> neighborEntry : graph.edgesFrom(nodeData.getNodeId()).entrySet()) {
                 NodeData<String> neighbor = neighborEntry.getKey();
-
-                if (closedList.contains(neighbor)) continue;
+                if (closedList.contains(neighbor)) {
+                    continue;
+                }
                 double distanceBetweenTwoNodes = neighborEntry.getValue();
                 double tentativeG = distanceBetweenTwoNodes + nodeData.getG();
 
@@ -200,84 +232,85 @@ public class AStarAlgorithm implements Algorithm{
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
-                  double theta = lon1 - lon2;
-                  double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2))
-                              + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-                  dist = Math.acos(dist);
-                  dist = rad2deg(dist);
-                  dist = dist * 60 * 1.1515;
-                  if (unit == 'K') {
-                    dist = dist * 1.609344;
-                  } else if (unit == 'N') {
-                        dist = dist * 0.8684;
-                  }
-                  else if(unit=='M'){
-                      dist=dist*1609.344 ;
-                  }
-                  return dist;
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2))
+                + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == 'K') {
+            dist = dist * 1.609344;
+        } else if (unit == 'N') {
+            dist = dist * 0.8684;
+        } else if (unit == 'M') {
+            dist = dist * 1609.344;
         }
- 
-        private static double deg2rad(double deg) {
-          return (deg * Math.PI / 180.0);
-        }
- 
-        private static double rad2deg(double rad) {
-          return (rad * 180 / Math.PI);
-        }
-        
-    @Override
-    public List<Location> calculatePath(String source,String destination) {
-        
-        Set<String> hash_Set = new HashSet<String>(); 
-        hash_Set.add(source) ;
-        Map<String, Map<String, Double>> hueristic = new HashMap<String, Map<String, Double>>();
-        int i=0 ;
-        graph = new GraphAStar<String>(hueristic);
-        
-        for(String locationName:hash_Set)
-        {
-            System.out.println("inside for") ;
-            Location location=locationDao.showLocationDetailsByName(locationName) ;
-            if(location.getName()!=null)
-                    continue ;
-            i++ ;
-            System.out.println("adding "+locationName+" to graph");
-            graph.addNode(locationName);
-            Map<String,Double> mapIntermediate=new HashMap<String,Double>() ;
-            mapIntermediate.put(location.getName(),0.0 ) ;
-            List<Location> listOfLocations=this.connectionDao.findNeighbors(location.getName()) ;
-            double lat1=location.getGeoLocation().getLatitude() ;
-            double lng1=location.getGeoLocation().getLongitude() ;
-            if(listOfLocations!=null) 
-            for(Location loc:listOfLocations)
-             {
-                 if(loc.getName()!=null)
-                     continue ;
-                 i++ ;
-                hash_Set.add(loc.getName()) ;
-                System.out.println("adding "+loc.getName()+" to hash_Set");
-                double lat2=loc.getGeoLocation().getLatitude() ;
-                double lng2=loc.getGeoLocation().getLongitude() ;
-                double dist=distance(lat1,lng1,lat2,lng2,'M');
-                graph.addEdge(locationName, loc.getName(), lng2);
-                 mapIntermediate.put(loc.getName(), dist) ;
-                 
-                 System.out.println("adding "+loc.getName()+"wid distance"+dist+ " to intermediate map"+location.getName());
-                 graph.addEdge(location.getName(), loc.getName(), dist);
-                 System.out.println("adding edge"+location.getName()+" to "+loc.getName()+"wid distance"+dist+ " to graph");
-             }
-            hueristic.put(location.getName(), mapIntermediate);
-            System.out.println("adding intermediate map to "+location.getName());
+        return dist;
+    }
 
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
+    @Override
+    public List<Location> calculatePath(String source, String destination) {
+
+//        Set<String> hash_Set = new HashSet<String>();
+//        hash_Set.add(source);
+        Map<String, Map<String, Double>> hueristic = floydWarshallAlgorithm.getMatrix();
+        List<String> iterator = new ArrayList<String>();
+        List<String> iterator2 = new ArrayList<String>();
+        graph = new GraphAStar<String>(hueristic);
+
+        for (Map.Entry<String, Map<String, Double>> entry : hueristic.entrySet()) {
+            System.out.println(entry.getKey());
+            iterator.add(entry.getKey());
+            iterator2.add(entry.getKey());
+            graph.addNode(entry.getKey());
         }
-        
-//        AStarAlgorithm<String> aStar=new AStarAlgorithm<String>(graph);
-        List<Location> intermediateLocations=new ArrayList<Location>() ;
-        for(String path: this.astar(source, destination))
-             intermediateLocations.add(locationDao.showLocationDetailsByName(path)) ;
-        
+
+        int totalNodes = hueristic.size();
+        int i = 0;
+
+        for (String locationName : iterator) {
+            Location location = locationDao.showLocationDetailsByName(locationName);
+            if (location == null) {
+                continue;
+            }
+            i++;
+            Map<String, Double> mapIntermediate = new HashMap<String, Double>();
+            List<Location> listOfLocations = this.connectionDao.findNeighbors(locationName);
+            double lat1 = location.getGeoLocation().getLatitude();
+            double lng1 = location.getGeoLocation().getLongitude();
+            if (listOfLocations != null) {
+                for (Location loc : listOfLocations) {
+                    if (loc == null) {
+                        continue;
+                    }
+                    i++;
+                    double lat2 = loc.getGeoLocation().getLatitude();
+                    double lng2 = loc.getGeoLocation().getLongitude();
+                    double dist = distance(lat1, lng1, lat2, lng2, 'M');
+                    graph.addEdge(location.getName(), loc.getName(), dist);
+                }
+            }
+        }
+        System.out.println("PRINTING GRAPH");
+        for (Entry<String, Map<NodeData<String>, Double>> nodes : graph.getEntrySet()) {
+            System.out.println(nodes.getKey());
+            for (Map.Entry<NodeData<String>, Double> st : nodes.getValue().entrySet()) {
+                System.out.println("--" + st.getKey().getNodeId() + " " + st.getValue());
+            }
+        }
+        List<Location> intermediateLocations = new ArrayList<Location>();
+        for (String path : astar(source, destination)) {
+            intermediateLocations.add(locationDao.showLocationDetailsByName(path));
+        }
+
         return intermediateLocations;
     }
-    
-    
 }

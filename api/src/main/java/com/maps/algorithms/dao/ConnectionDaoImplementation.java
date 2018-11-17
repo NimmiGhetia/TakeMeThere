@@ -30,22 +30,24 @@ public class ConnectionDaoImplementation implements ConnectionDao {
     @Autowired
     private MongoOperations mongoOps;
     @Autowired
-    private LocationDao locationDao ;
-    
+    private LocationDao locationDao;
+
     @Override
     public List<Location> findNeighbors(String name) {
 //        System.out.println("inside find neighbors") ;
-        List<Location> list=new ArrayList() ;
+        List<Location> list = new ArrayList();
         Query searchUserQuery = new Query(Criteria.where("_id").is(name));
-        List<String> neighbors= new ArrayList();
-        Connection connection=mongoOps.findOne(searchUserQuery,Connection.class) ;
-        neighbors=connection.getNeighbors() ;
-        for(String near:neighbors)
-        {
-            Location location=locationDao.showLocationDetailsByName(near) ;
-            list.add(location) ;
+        List<String> neighbors = null;
+        Connection connection = mongoOps.findOne(searchUserQuery, Connection.class);
+        if(connection!=null)
+        neighbors = connection.getNeighbors();
+        if (neighbors != null) {
+            for (String near : neighbors) {
+                Location location = locationDao.showLocationDetailsByName(near);
+                list.add(location);
+            }
         }
-        return list ;
+        return list;
     }
-    
+
 }
