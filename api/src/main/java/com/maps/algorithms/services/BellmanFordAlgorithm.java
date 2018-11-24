@@ -119,6 +119,13 @@ public class BellmanFordAlgorithm implements Algorithm {
 
     private static void calculateMinimumDistance(Node evaluationNode,
             Double edgeWeigh, Node sourceNode) {
+        if (evaluationNode == null) {
+            throw new NullPointerException("evaluation Node cannot be null to add it to shortest path of from source");
+        }
+        if (sourceNode == null) {
+            throw new NullPointerException("source Node cannot be null to calulate minimum distance");
+        }
+
         Double sourceDistance = sourceNode.getDistance();
         if (sourceDistance + edgeWeigh < evaluationNode.getDistance()) {
             evaluationNode.setDistance(sourceDistance + edgeWeigh);
@@ -129,6 +136,12 @@ public class BellmanFordAlgorithm implements Algorithm {
     }
 
     public static Graph calculateShortestPathFromSource(Graph graph, Node source) throws NegativeCycleException {
+        if (graph == null) {
+            throw new NullPointerException("Graph can not be null to calculate shortest path");
+        }
+        if (source == null) {
+            throw new NullPointerException("source can not be null to calculate shortest path");
+        }
         source.setDistance(0.0);
         int numOfNodes = graph.getSize();
         Set<Node> nodes = graph.getNodes();
@@ -139,7 +152,6 @@ public class BellmanFordAlgorithm implements Algorithm {
                         : currentNode.getAdjacentNodes().entrySet()) {
                     Node adjacentNode = adjacencyPair.getKey();
                     Double edgeWeight = adjacencyPair.getValue();
-                    System.out.println("calculating minimun distance between " + currentNode.getName() + " and " + adjacentNode.getName());
                     calculateMinimumDistance(adjacentNode, edgeWeight, currentNode);
                 }
             }
@@ -185,6 +197,12 @@ public class BellmanFordAlgorithm implements Algorithm {
 
     @Override
     public List<Location> calculatePath(String source, String destination) throws NegativeCycleException {
+        if (source == null) {
+            throw new NullPointerException("source cannot be null to calculate path between source and destination");
+        }
+        if (destination == null) {
+            throw new NullPointerException("destination cannot be null to calculate path between source and destination");
+        }
         Iterator<String> itr = null;
         itr = floydWarshallAlgorithm.getIterator();
         Location sourceLocation = locationDao.showLocationDetailsByName(source);
@@ -233,6 +251,7 @@ public class BellmanFordAlgorithm implements Algorithm {
                 : sourceNode.getAdjacentNodes().entrySet()) {
             System.out.println("--" + adjacencyPair.getKey().getName());
         }
+
         graph = BellmanFordAlgorithm.calculateShortestPathFromSource(graph, sourceNode);
 
         List<Location> result = new ArrayList();

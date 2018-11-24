@@ -48,7 +48,7 @@ public class FloydWarshallAlgorithm {
         return (Iterator<String>) list.iterator() ;
     }
     
-    @PostConstruct
+//    @PostConstruct
     public void floydWarshall() {
         matrix = new HashMap<String, Map<String, Double>>();
         List<Location> allLocation = locationDao.findAllLocations();

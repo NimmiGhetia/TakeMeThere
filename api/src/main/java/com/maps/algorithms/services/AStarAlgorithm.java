@@ -258,9 +258,6 @@ public class AStarAlgorithm implements Algorithm {
 
     @Override
     public List<Location> calculatePath(String source, String destination) {
-
-//        Set<String> hash_Set = new HashSet<String>();
-//        hash_Set.add(source);
         Map<String, Map<String, Double>> hueristic = floydWarshallAlgorithm.getMatrix();
         List<String> iterator = new ArrayList<String>();
         List<String> iterator2 = new ArrayList<String>();
@@ -274,14 +271,12 @@ public class AStarAlgorithm implements Algorithm {
         }
 
         int totalNodes = hueristic.size();
-        int i = 0;
 
         for (String locationName : iterator) {
             Location location = locationDao.showLocationDetailsByName(locationName);
             if (location == null) {
                 continue;
             }
-            i++;
             Map<String, Double> mapIntermediate = new HashMap<String, Double>();
             List<Location> listOfLocations = this.connectionDao.findNeighbors(locationName);
             double lat1 = location.getGeoLocation().getLatitude();
@@ -291,7 +286,6 @@ public class AStarAlgorithm implements Algorithm {
                     if (loc == null) {
                         continue;
                     }
-                    i++;
                     double lat2 = loc.getGeoLocation().getLatitude();
                     double lng2 = loc.getGeoLocation().getLongitude();
                     double dist = distance(lat1, lng1, lat2, lng2, 'M');
